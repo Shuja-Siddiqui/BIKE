@@ -15,6 +15,11 @@
 
       console.log("Yjs loaded:", Y);
       console.log("WebrtcProvider loaded:", WebrtcProvider);
+      
+      // Signal that Yjs is ready
+      if (window.resolveYjsLoaded) {
+        window.resolveYjsLoaded();
+      }
     </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>

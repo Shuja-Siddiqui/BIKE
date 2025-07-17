@@ -2,14 +2,14 @@ window.liveView = {
   renderLiveView: async function ({ sessionId, userId }) {
     // Wait for Yjs to load if not available
     if (!window.Y) {
-      console.log("lol doing it");
-      await new Promise((resolve) => {
-        const check = () => {
-          if (window.Y) resolve();
-          else setTimeout(check, 100);
-        };
-        check();
-      });
+      console.log("Waiting for Yjs to load...");
+      await window.yjsLoaded;
+    }
+
+    // Double-check that Yjs is available
+    if (!window.Y || !window.WebrtcProvider) {
+      console.error("Yjs or WebrtcProvider not available after loading");
+      return "<div>Error: Yjs libraries not loaded</div>";
     }
 
     const Y = window.Y;
