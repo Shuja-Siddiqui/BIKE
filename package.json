@@ -1,0 +1,29 @@
+{
+  "name": "bike-collaboration",
+  "version": "1.0.0",
+  "description": "Y.js collaboration server for Bike",
+  "main": "collaboration-server.js",
+  "scripts": {
+    "start": "node collaboration-server.js",
+    "dev": "nodemon collaboration-server.js",
+    "install-server": "npm install",
+    "start-collab": "node collaboration-server.js"
+  },
+  "dependencies": {
+    "ws": "^8.14.2",
+    "yjs": "^13.6.8",
+    "y-websocket": "^1.5.0",
+    "lib0": "^0.2.85"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "yjs",
+    "collaboration",
+    "websocket",
+    "real-time"
+  ],
+  "author": "Bike Team",
+  "license": "MIT"
+}

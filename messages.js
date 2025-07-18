@@ -963,6 +963,11 @@ function addMessage(role, content, options = {}) {
   window.context.setActiveMessages(messages);
   window.context.setActiveMessageIndex(messages.length - 1);
 
+  // Share message in collaboration if active
+  if (window.collaboration && window.collaboration.isCollaborating()) {
+    window.collaboration.shareMessage(message);
+  }
+
   window.inputModule.hide();
 
   // Handle incremental display for assistant messages

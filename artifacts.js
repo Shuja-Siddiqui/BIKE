@@ -87,6 +87,11 @@ function createArtifactBase(
   window.context?.setState({ artifacts: [...currentArtifacts, artifact] });
   window.memory?.saveArtifacts();
 
+  // Share artifact in collaboration if active
+  if (window.collaboration && window.collaboration.isCollaborating()) {
+    window.collaboration.shareArtifact(artifact);
+  }
+
   if (shouldSetActive) {
     window.context?.setActiveArtifactId(id);
   }
@@ -121,6 +126,12 @@ function updateArtifact(id, content) {
   });
   window.context?.setActiveVersionIndex(id, artifact.versions.length - 1);
   window.memory?.saveArtifacts();
+  
+  // Share artifact update in collaboration if active
+  if (window.collaboration && window.collaboration.isCollaborating()) {
+    window.collaboration.shareArtifact(artifact);
+  }
+  
   return artifact;
 }
 
