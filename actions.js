@@ -8,7 +8,8 @@ const ACTION_CATEGORIES = {
   CHAT: 'chat',
   ARTIFACTS: 'artifacts', 
   VIEWS: 'views',
-  AUTH: 'auth'
+  AUTH: 'auth',
+  COLLABORATION: 'collaboration'
 };
 
 // =================== Action Execution Tracking ===================
@@ -1620,6 +1621,238 @@ const ACTIONS_REGISTRY = {
           {},
           'No user currently logged in',
           'No active authentication session to logout from'
+        );
+      }
+    }
+  },
+
+  // =================== Collaboration Actions ===================
+
+  'collaboration.create': {
+    id: 'collaboration.create',
+    name: 'Create Collaboration Link',
+    description: 'Create a new collaboration session and generate a shareable link',
+    category: ACTION_CATEGORIES.COLLABORATION,
+    requiredParams: [],
+    optionalParams: [],
+    availableData: () => ({
+      isActive: window.collaboration?.getStatus()?.isActive || false,
+      currentCollaborationId: window.collaboration?.getStatus()?.collaborationId || null
+    }),
+    handler: async (params = {}) => {
+      if (!window.collaboration) {
+        return createStandardizedResult(
+          'collaboration.create',
+          'Create Collaboration Link',
+          false,
+          {},
+          'Collaboration module not available',
+          'Collaboration functionality is not loaded'
+        );
+      }
+
+      try {
+        const result = await window.collaboration.createCollaboration();
+        
+        if (result.success) {
+          return createStandardizedResult(
+            'collaboration.create',
+            'Create Collaboration Link',
+            true,
+            {
+              collaborationId: result.collaborationId,
+              link: result.link,
+              action: 'Created collaboration session',
+              type: 'collaboration'
+            },
+            null,
+            result.message
+          );
+        } else {
+          return createStandardizedResult(
+            'collaboration.create',
+            'Create Collaboration Link',
+            false,
+            {},
+            result.error,
+            result.error
+          );
+        }
+      } catch (error) {
+        return createStandardizedResult(
+          'collaboration.create',
+          'Create Collaboration Link',
+          false,
+          {},
+          error.message,
+          `Failed to create collaboration: ${error.message}`
+        );
+      }
+    }
+  },
+
+  'collaboration.join': {
+    id: 'collaboration.join',
+    name: 'Join Collaboration',
+    description: 'Join an existing collaboration session using a collaboration ID',
+    category: ACTION_CATEGORIES.COLLABORATION,
+    requiredParams: ['collaborationId'],
+    optionalParams: [],
+    availableData: () => ({
+      isActive: window.collaboration?.getStatus()?.isActive || false,
+      currentCollaborationId: window.collaboration?.getStatus()?.collaborationId || null
+    }),
+    handler: async (params) => {
+      const { collaborationId } = params;
+      
+      if (!window.collaboration) {
+        return createStandardizedResult(
+          'collaboration.join',
+          'Join Collaboration',
+          false,
+          {},
+          'Collaboration module not available',
+          'Collaboration functionality is not loaded'
+        );
+      }
+
+      try {
+        const result = await window.collaboration.joinCollaboration(collaborationId);
+        
+        if (result.success) {
+          return createStandardizedResult(
+            'collaboration.join',
+            'Join Collaboration',
+            true,
+            {
+              collaborationId: result.collaborationId,
+              action: 'Joined collaboration session',
+              type: 'collaboration'
+            },
+            null,
+            result.message
+          );
+        } else {
+          return createStandardizedResult(
+            'collaboration.join',
+            'Join Collaboration',
+            false,
+            {},
+            result.error,
+            result.error
+          );
+        }
+      } catch (error) {
+        return createStandardizedResult(
+          'collaboration.join',
+          'Join Collaboration',
+          false,
+          {},
+          error.message,
+          `Failed to join collaboration: ${error.message}`
+        );
+      }
+    }
+  },
+
+  'collaboration.leave': {
+    id: 'collaboration.leave',
+    name: 'Leave Collaboration',
+    description: 'Leave the current collaboration session',
+    category: ACTION_CATEGORIES.COLLABORATION,
+    requiredParams: [],
+    optionalParams: [],
+    availableData: () => ({
+      isActive: window.collaboration?.getStatus()?.isActive || false,
+      currentCollaborationId: window.collaboration?.getStatus()?.collaborationId || null
+    }),
+    handler: async (params = {}) => {
+      if (!window.collaboration) {
+        return createStandardizedResult(
+          'collaboration.leave',
+          'Leave Collaboration',
+          false,
+          {},
+          'Collaboration module not available',
+          'Collaboration functionality is not loaded'
+        );
+      }
+
+      try {
+        const result = window.collaboration.leaveCollaboration();
+        
+        return createStandardizedResult(
+          'collaboration.leave',
+          'Leave Collaboration',
+          true,
+          {
+            action: 'Left collaboration session',
+            type: 'collaboration'
+          },
+          null,
+          result.message
+        );
+      } catch (error) {
+        return createStandardizedResult(
+          'collaboration.leave',
+          'Leave Collaboration',
+          false,
+          {},
+          error.message,
+          `Failed to leave collaboration: ${error.message}`
+        );
+      }
+    }
+  },
+
+  'collaboration.status': {
+    id: 'collaboration.status',
+    name: 'Get Collaboration Status',
+    description: 'Get the current status of collaboration session',
+    category: ACTION_CATEGORIES.COLLABORATION,
+    requiredParams: [],
+    optionalParams: [],
+    availableData: () => ({
+      isActive: window.collaboration?.getStatus()?.isActive || false,
+      currentCollaborationId: window.collaboration?.getStatus()?.collaborationId || null
+    }),
+    handler: async (params = {}) => {
+      if (!window.collaboration) {
+        return createStandardizedResult(
+          'collaboration.status',
+          'Get Collaboration Status',
+          false,
+          {},
+          'Collaboration module not available',
+          'Collaboration functionality is not loaded'
+        );
+      }
+
+      try {
+        const status = window.collaboration.getStatus();
+        const shareableLink = window.collaboration.getShareableLink();
+        
+        return createStandardizedResult(
+          'collaboration.status',
+          'Get Collaboration Status',
+          true,
+          {
+            ...status,
+            shareableLink,
+            action: 'Retrieved collaboration status',
+            type: 'collaboration'
+          },
+          null,
+          `Collaboration status: ${status.isActive ? 'Active' : 'Inactive'}${status.collaborationId ? ` (ID: ${status.collaborationId})` : ''}`
+        );
+      } catch (error) {
+        return createStandardizedResult(
+          'collaboration.status',
+          'Get Collaboration Status',
+          false,
+          {},
+          error.message,
+          `Failed to get collaboration status: ${error.message}`
         );
       }
     }
