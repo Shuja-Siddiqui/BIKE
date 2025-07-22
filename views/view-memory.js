@@ -235,6 +235,9 @@ function renderMemoryView() {
           <button class="button-secondary" onclick="handleTriggerDiscovery()">
             Trigger Discovery
           </button>
+          <button class="button-secondary" onclick="handleOpenMessenger()">
+            💬 Chat Room
+          </button>
         </div>
       </div>
     `
@@ -247,6 +250,9 @@ function renderMemoryView() {
           </div>
           <button class="button-primary" onclick="handleCreateCollaboration()">
             Create Link
+          </button>
+          <button class="button-secondary" onclick="handleOpenMessenger()">
+            💬 Chat Room
           </button>
         </div>
       </div>
@@ -431,6 +437,34 @@ if (document.readyState === "loading") {
 }
 
 // Export functions for global access
+// =================== Messenger Functions ===================
+
+function handleOpenMessenger() {
+  console.log("[MESSENGER] Opening messenger from memory view");
+
+  if (!window.messenger) {
+    console.error("[MESSENGER] Messenger module not available");
+    alert(
+      "Messenger module not loaded. Please refresh the page and try again."
+    );
+    return;
+  }
+
+  try {
+    // Show the messenger
+    window.messenger.show();
+
+    // Auto-join a default room if not connected
+    if (!window.messenger.isConnected) {
+      const defaultRoom = "general-chat";
+      window.messenger.joinRoom(defaultRoom);
+    }
+  } catch (error) {
+    console.error("[MESSENGER] Error opening messenger:", error);
+    alert(`Error opening messenger: ${error.message}`);
+  }
+}
+
 window.memoryView = {
   renderMemoryView,
   refreshMemoryView,
